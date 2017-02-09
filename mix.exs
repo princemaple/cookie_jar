@@ -16,7 +16,8 @@ defmodule CookieJar.Mixfile do
   end
 
   defp deps do
-    [{:httpoison, "~> 0.11", optional: true}]
+    [{:httpoison, "~> 0.11", optional: true},
+     {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
   defp package do
