@@ -19,12 +19,12 @@ defmodule CookieJar.HTTPoison do
   end
 
   defp add_jar_cookies(jar, headers) do
-    jar_cookies = jar |> CookieJar.peek |> Enum.into([])
+    jar_cookies = CookieJar.label(jar)
 
     headers
     |> Enum.into(%{})
-    |> Map.update("Cookie", Enum.join(jar_cookies, "; "), fn user_cookies ->
-      Enum.join([user_cookies | jar_cookies], "; ")
+    |> Map.update("Cookie", jar_cookies, fn user_cookies ->
+      "#{user_cookies}; #{jar_cookies}"
     end)
     |> Enum.into([])
   end
