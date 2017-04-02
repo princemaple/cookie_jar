@@ -3,6 +3,11 @@ if Code.ensure_loaded?(HTTPotion) do
     @actions_without_body ~w[get get! head head! options options! delete delete!]a
     @actions_with_body ~w[post post! put put! patch patch!]a
 
+    @moduledoc ~s"""
+    Use this module instead of HTTPotion, use jar as the first argument in all
+    function calls, i.e. #{inspect(@actions_without_body ++ @actions_with_body)}
+    """
+
     for action <- @actions_without_body do
       def unquote(action)(jar, url, options \\ []) do
         headers = add_jar_cookies(jar, options[:headers])
