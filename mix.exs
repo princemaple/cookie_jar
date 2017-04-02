@@ -3,7 +3,7 @@ defmodule CookieJar.Mixfile do
 
   def project do
     [app: :cookie_jar,
-     version: "0.2.3",
+     version: "0.2.4",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
