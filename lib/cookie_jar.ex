@@ -8,7 +8,7 @@ defmodule CookieJar do
   @doc """
   Create a new cookie jar
 
-  ## examples
+  ## Examples
 
       CookieJar.start_link
       # or
@@ -22,7 +22,7 @@ defmodule CookieJar do
   @doc """
   See what's in the cookie jar, the individual cookies
 
-  ## examples
+  ## Examples
 
       iex> {:ok, jar} = CookieJar.new
       iex> CookieJar.peek(jar)
@@ -39,7 +39,7 @@ defmodule CookieJar do
   @doc """
   Get the cookies in Cookie format
 
-  # examples
+  ## Examples
 
       CookieJar.to_string(jar)
       # or
@@ -61,7 +61,7 @@ defmodule CookieJar do
   @doc """
   Put cookie into a cookie jar
 
-  # examples
+  ## Examples
 
       iex> {:ok, jar} = CookieJar.new
       iex> CookieJar.peek(jar)
@@ -79,7 +79,7 @@ defmodule CookieJar do
   @doc """
   Put *new* cookie into a cookie jar
 
-  # examples
+  ## Examples
 
       iex> {:ok, jar} = CookieJar.new
       iex> CookieJar.peek(jar)
@@ -97,7 +97,7 @@ defmodule CookieJar do
   @doc """
   Pour cookies into a cookie jar
 
-  # examples
+  ## Examples
 
       iex> {:ok, jar} = CookieJar.new
       iex> CookieJar.peek(jar)
@@ -114,7 +114,7 @@ defmodule CookieJar do
   @doc """
   Destroy a cookie jar
 
-  # examples
+  ## Examples
 
       CookieJar.stop(jar)
       # or
