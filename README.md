@@ -12,6 +12,6 @@ by adding `cookie_jar` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:cookie_jar, "~> 0.2"}]
+  [{:cookie_jar, "~> 1.0"}]
 end
 ```
