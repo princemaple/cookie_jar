@@ -15,3 +15,27 @@ def deps do
   [{:cookie_jar, "~> 1.0"}]
 end
 ```
+
+## Usage
+
+1. Add alias
+```elixir
+alias CookieJar.HTTPoison, as: HTTPoison
+```
+
+2. Get a cookie jar
+```elixir
+jar = CookieJar.new
+```
+
+3. Shove the jar into all http calls
+```diff
+- HTTPoison.get("https://example.com/api/call")
++ HTTPoison.get(jar, "https://example.com/api/call")
+```
+
+4. Profit (cookies imprisoned)
+
+**Take a look at [the docs](https://hexdocs.pm/cookie_jar/CookieJar.html#content) for directly using the cookie jar**
+[HTTPoison adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPoison.html#content)
+[HTTPotion adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPotion.html#content)
