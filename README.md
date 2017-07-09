@@ -36,6 +36,7 @@ jar = CookieJar.new
 
 4. Profit (cookies imprisoned)
 
-**Take a look at [the docs](https://hexdocs.pm/cookie_jar/CookieJar.html#content) for directly using the cookie jar**
-[HTTPoison adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPoison.html#content)
-[HTTPotion adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPotion.html#content)
+**Take a look at [the docs](https://hexdocs.pm/cookie_jar)**
+- [How to directly use CookieJar](https://hexdocs.pm/cookie_jar/CookieJar.html#content)
+- [HTTPoison adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPoison.html#content)
+- [HTTPotion adapter](https://hexdocs.pm/cookie_jar/CookieJar.HTTPotion.html#content)
