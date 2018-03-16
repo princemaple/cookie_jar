@@ -3,7 +3,7 @@ defmodule CookieJar.Mixfile do
 
   def project do
     [app: :cookie_jar,
-     version: "1.0.0",
+     version: "1.0.1",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -16,7 +16,7 @@ defmodule CookieJar.Mixfile do
   end
 
   defp deps do
-    [{:httpoison, "~> 0.11", optional: true},
+    [{:httpoison, "~> 0.11 or ~> 1.0", optional: true},
      {:httpotion, "~> 3.0", optional: true},
      {:ex_doc, ">= 0.0.0", only: :dev}]
   end
