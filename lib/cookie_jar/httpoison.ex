@@ -48,13 +48,17 @@ if Code.ensure_loaded?(HTTPoison) do
     end
 
     defp do_update_jar_cookies(jar, headers) do
-      cookies = Enum.reduce(headers, %{}, fn
-        {"Set-Cookie", cookie}, cookies ->
-          [key_value_string | _rest] = String.split(cookie, "; ")
-          [key, value] = String.split(key_value_string, "=", parts: 2)
-          Map.put(cookies, key, value)
-        _, cookies -> cookies
-      end)
+      cookies =
+        Enum.reduce(headers, %{}, fn
+          {"Set-Cookie", cookie}, cookies ->
+            [key_value_string | _rest] = String.split(cookie, "; ")
+            [key, value] = String.split(key_value_string, "=", parts: 2)
+            Map.put(cookies, key, value)
+
+          _, cookies ->
+            cookies
+        end)
+
       CookieJar.pour(jar, cookies)
     end
   end

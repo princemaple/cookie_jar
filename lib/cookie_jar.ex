@@ -14,7 +14,7 @@ defmodule CookieJar do
       # or
       CookieJar.new
   """
-  @spec start_link(keyword) :: GenServer.onstart
+  @spec start_link(keyword) :: GenServer.onstart()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
@@ -31,7 +31,7 @@ defmodule CookieJar do
       iex> CookieJar.peek(jar)
       %{"name" => "john doe"}
   """
-  @spec peek(GenServer.server) :: map
+  @spec peek(GenServer.server()) :: map
   def peek(jar) do
     GenServer.call(jar, :peek)
   end
@@ -53,7 +53,7 @@ defmodule CookieJar do
       iex> CookieJar.to_string(jar)
       "a=1; b=2"
   """
-  @spec to_string(GenServer.server) :: String.t
+  @spec to_string(GenServer.server()) :: String.t()
   def to_string(jar) do
     GenServer.call(jar, :to_string)
   end
@@ -71,7 +71,7 @@ defmodule CookieJar do
       iex> CookieJar.to_string(jar)
       "a=1; b=2"
   """
-  @spec put(GenServer.server, {term, term}) :: :ok
+  @spec put(GenServer.server(), {term, term}) :: :ok
   def put(jar, cookie) do
     GenServer.cast(jar, {:put, cookie})
   end
@@ -89,7 +89,7 @@ defmodule CookieJar do
       iex> CookieJar.to_string(jar)
       "a=1"
   """
-  @spec put_new(GenServer.server, {term, term}) :: :ok
+  @spec put_new(GenServer.server(), {term, term}) :: :ok
   def put_new(jar, cookie) do
     GenServer.cast(jar, {:put_new, cookie})
   end
@@ -106,7 +106,7 @@ defmodule CookieJar do
       iex> CookieJar.peek(jar)
       %{"a" => 1, "b" => 2}
   """
-  @spec pour(GenServer.server, map) :: :ok
+  @spec pour(GenServer.server(), map) :: :ok
   def pour(jar, cookies) do
     GenServer.cast(jar, {:pour, cookies})
   end
@@ -125,7 +125,7 @@ defmodule CookieJar do
       iex> Process.alive?(jar)
       false
   """
-  @spec stop(GenServer.server) :: :ok
+  @spec stop(GenServer.server()) :: :ok
   def stop(jar) do
     GenServer.stop(jar)
   end

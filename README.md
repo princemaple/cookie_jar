@@ -2,6 +2,8 @@
 
 [![hex.pm version](https://img.shields.io/hexpm/v/cookie_jar.svg?style=flat)](https://hex.pm/packages/cookie_jar)
 [![API Docs](https://img.shields.io/badge/api-docs-blue.svg?style=flat)](https://hexdocs.pm/cookie_jar/)
+[![Build Status](https://secure.travis-ci.org/princemaple/cookie_jar.svg?branch=master
+"Build Status")](https://travis-ci.org/princemaple/cookie_jar)
 
 ![COOKIE JAR](https://cloud.githubusercontent.com/assets/1329716/22807691/5fe454d6-ef7c-11e6-8e0b-30aca685c83a.jpg)
 
@@ -25,7 +27,7 @@ alias CookieJar.HTTPoison, as: HTTPoison
 
 2. Get a cookie jar
 ```elixir
-jar = CookieJar.new
+{:ok, jar} = CookieJar.new
 ```
 
 3. Shove the jar into all http calls
