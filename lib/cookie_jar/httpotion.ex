@@ -25,12 +25,13 @@ if Code.ensure_loaded?(HTTPotion) do
     end
 
     defp add_jar_cookies(jar, nil), do: add_jar_cookies(jar, [])
+
     defp add_jar_cookies(jar, headers) do
       jar_cookies = CookieJar.label(jar)
 
       headers
       |> Enum.into(%{})
-      |> Map.update(:"Cookie", jar_cookies, fn user_cookies ->
+      |> Map.update(:Cookie, jar_cookies, fn user_cookies ->
         "#{user_cookies}; #{jar_cookies}"
       end)
       |> Enum.into([])
@@ -44,13 +45,14 @@ if Code.ensure_loaded?(HTTPotion) do
     defp update_jar_cookies(_jar, %HTTPotion.ErrorResponse{} = error), do: error
 
     defp do_update_jar_cookies(jar, %HTTPotion.Headers{hdrs: headers}) do
-      response_cookies = Map.get(headers, "set-cookie", []) |> List.wrap
+      response_cookies = Map.get(headers, "set-cookie", []) |> List.wrap()
 
-      cookies = Enum.reduce(response_cookies, %{}, fn cookie, cookies ->
-        [key_value_string | _rest] = String.split(cookie, "; ")
-        [key, value] = String.split(key_value_string, "=", parts: 2)
-        Map.put(cookies, key, value)
-      end)
+      cookies =
+        Enum.reduce(response_cookies, %{}, fn cookie, cookies ->
+          [key_value_string | _rest] = String.split(cookie, "; ")
+          [key, value] = String.split(key_value_string, "=", parts: 2)
+          Map.put(cookies, key, value)
+        end)
 
       CookieJar.pour(jar, cookies)
     end
