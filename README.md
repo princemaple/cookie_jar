@@ -25,7 +25,7 @@ alias CookieJar.HTTPoison, as: HTTPoison
 
 2. Get a cookie jar
 ```elixir
-jar = CookieJar.new
+{:ok, jar} = CookieJar.new
 ```
 
 3. Shove the jar into all http calls
