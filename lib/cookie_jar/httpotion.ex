@@ -1,27 +1,26 @@
 if Code.ensure_loaded?(HTTPotion) do
   defmodule CookieJar.HTTPotion do
-    @actions_without_body ~w[get get! head head! options options! delete delete!]a
-    @actions_with_body ~w[post post! put put! patch patch!]a
+    @actions ~w(
+      get head options delete post put patch
+      get! head! options! delete! post! put! patch!
+    )a
 
     @moduledoc ~s"""
     Use this module instead of HTTPotion, use jar as the first argument in all
-    function calls, i.e. #{inspect(@actions_without_body ++ @actions_with_body)}
+    function calls, i.e. #{inspect(@actions)}
     """
 
-    for action <- @actions_without_body do
-      def unquote(action)(jar, url, options \\ []) do
-        headers = add_jar_cookies(jar, options[:headers])
-        result = HTTPotion.unquote(action)(url, Keyword.put(options, :headers, headers))
-        update_jar_cookies(jar, result)
-      end
-    end
+    import CookieJar.SpecUtils, only: [httpotion_spec: 1]
 
-    for action <- @actions_with_body do
-      def unquote(action)(jar, url, options \\ []) do
-        headers = add_jar_cookies(jar, options[:headers])
-        result = HTTPotion.unquote(action)(url, Keyword.put(options, :headers, headers))
-        update_jar_cookies(jar, result)
-      end
+    for action <- @actions do
+      [
+        Code.eval_quoted(httpotion_spec(action), [], __ENV__),
+        def unquote(action)(jar, url, options \\ []) do
+          headers = add_jar_cookies(jar, options[:headers])
+          result = HTTPotion.unquote(action)(url, Keyword.put(options, :headers, headers))
+          update_jar_cookies(jar, result)
+        end
+      ]
     end
 
     defp add_jar_cookies(jar, nil), do: add_jar_cookies(jar, [])

@@ -8,20 +8,28 @@ if Code.ensure_loaded?(HTTPoison) do
     function calls, i.e. #{inspect(@actions_without_body ++ @actions_with_body)}
     """
 
+    import CookieJar.SpecUtils, only: [httpoison_spec: 2]
+
     for action <- @actions_without_body do
-      def unquote(action)(jar, url, headers \\ [], options \\ []) do
-        headers = add_jar_cookies(jar, headers)
-        result = HTTPoison.unquote(action)(url, headers, options)
-        update_jar_cookies(jar, result)
-      end
+      [
+        Code.eval_quoted(httpoison_spec(action, false), [], __ENV__),
+        def unquote(action)(jar, url, headers \\ [], options \\ []) do
+          headers = add_jar_cookies(jar, headers)
+          result = HTTPoison.unquote(action)(url, headers, options)
+          update_jar_cookies(jar, result)
+        end
+      ]
     end
 
     for action <- @actions_with_body do
-      def unquote(action)(jar, url, body, headers \\ [], options \\ []) do
-        headers = add_jar_cookies(jar, headers)
-        result = HTTPoison.unquote(action)(url, body, headers, options)
-        update_jar_cookies(jar, result)
-      end
+      [
+        Code.eval_quoted(httpoison_spec(action, true), [], __ENV__),
+        def unquote(action)(jar, url, body, headers \\ [], options \\ []) do
+          headers = add_jar_cookies(jar, headers)
+          result = HTTPoison.unquote(action)(url, body, headers, options)
+          update_jar_cookies(jar, result)
+        end
+      ]
     end
 
     defp add_jar_cookies(jar, headers) do
