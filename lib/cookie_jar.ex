@@ -3,8 +3,6 @@ defmodule CookieJar do
   CookieJar is here to store your cookie
   """
 
-  use GenServer
-
   @doc """
   Create a new cookie jar
 
@@ -16,7 +14,7 @@ defmodule CookieJar do
   """
   @spec start_link(keyword) :: GenServer.onstart()
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+    GenServer.start_link(CookieJar.Server, :ok, opts)
   end
 
   @doc """
@@ -133,33 +131,4 @@ defmodule CookieJar do
   defdelegate new(opts \\ []), to: __MODULE__, as: :start_link
   defdelegate label(jar), to: __MODULE__, as: :to_string
   defdelegate smash(jar), to: __MODULE__, as: :stop
-
-  def init(_) do
-    {:ok, %{}}
-  end
-
-  def handle_call(:peek, _from, jar) do
-    {:reply, jar, jar}
-  end
-
-  def handle_call(:to_string, _from, jar) do
-    reply =
-      jar
-      |> Enum.map(fn {key, value} -> "#{key}=#{value}" end)
-      |> Enum.join("; ")
-
-    {:reply, reply, jar}
-  end
-
-  def handle_cast({:put, {key, value}}, jar) do
-    {:noreply, Map.put(jar, key, value)}
-  end
-
-  def handle_cast({:put_new, {key, value}}, jar) do
-    {:noreply, Map.put_new(jar, key, value)}
-  end
-
-  def handle_cast({:pour, cookies}, jar) do
-    {:noreply, Map.merge(jar, cookies)}
-  end
 end
