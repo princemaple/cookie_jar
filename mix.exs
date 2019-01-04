@@ -1,14 +1,17 @@
 defmodule CookieJar.Mixfile do
   use Mix.Project
 
+  @version "1.0.4"
+
   def project do
     [
       app: :cookie_jar,
-      version: "1.0.4",
+      version: @version,
       elixir: "~> 1.4",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      docs: docs(),
       package: package()
     ]
   end
@@ -30,7 +33,16 @@ defmodule CookieJar.Mixfile do
       description: "CookieJar stores your cookies and applies them to future requests",
       licenses: ["MIT"],
       maintainers: ["Po Chen"],
-      links: %{GitHub: "https://github.com/princemaple/cookie_jar"}
+      links: %{"GitHub" => "https://github.com/princemaple/cookie_jar"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "CookieJar",
+      source_ref: "v#{@version}",
+      canonical: "http://hexdocs.pm/cookie_jar",
+      source_url: "https://github.com/princemaple/cookie_jar"
     ]
   end
 end
