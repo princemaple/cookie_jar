@@ -3,11 +3,11 @@ defmodule CookieJar.SpecUtils do
     parameters =
       if body do
         quote do
-          [GenServer.server(), String.t(), any, Keyword.t(), Keyword.t()]
+          [GenServer.server(), String.t(), any, HTTPoison.headers(), HTTPoison.options()]
         end
       else
         quote do
-          [GenServer.server(), String.t(), Keyword.t(), Keyword.t()]
+          [GenServer.server(), String.t(), HTTPoison.headers(), HTTPoison.options()]
         end
       end
 
