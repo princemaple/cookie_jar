@@ -77,7 +77,7 @@ defmodule CookieJar.Cookie do
       # attempted to set secure cookie from http
       cookie.secure && !secure -> nil
       # attempted to set cross site cookie
-      cookie.domain != host -> nil
+      uri != nil && cookie.domain != host && cookie.domain != parent_domain(host) -> nil
       true -> cookie
     end
   end
@@ -192,8 +192,8 @@ defmodule CookieJar.Cookie do
   defp update_cookie(cookie, "expires", exp) do
     case Timex.parse(exp, "{RFC1123}") do
       {:ok, date} -> %{cookie | expires: DateTime.to_unix(date)}
-      # ignore malformed date
-      _ -> nil
+      # there is so many broken date string out there, so I have go let it go
+      _ -> cookie
     end
   end
 
@@ -203,4 +203,11 @@ defmodule CookieJar.Cookie do
   defp update_cookie(cookie, "secure"), do: %{cookie | secure: true}
   # fell off case for unrecognized parameters
   defp update_cookie(cookie, _), do: cookie
+
+  defp parent_domain(host) do
+    case String.split(host, ".", parts: 2) do
+      [_head, parent] -> parent
+      _ -> nil
+    end
+  end
 end
