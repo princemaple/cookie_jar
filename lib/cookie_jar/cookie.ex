@@ -156,7 +156,6 @@ defmodule CookieJar.Cookie do
   end
 
   defp update_cookie(cookie, "path", path) do
-    # remive trailing /
     %{cookie | path: String.trim_trailing(path, "/")}
   end
 
@@ -180,11 +179,9 @@ defmodule CookieJar.Cookie do
     end
   end
 
-  # fell off case for unrecognized parameters
   defp update_cookie(cookie, _, _), do: cookie
 
   defp update_cookie(cookie, "secure"), do: %{cookie | secure: true}
-  # fell off case for unrecognized parameters
   defp update_cookie(cookie, _), do: cookie
 
   defp parent_domain(host) do
