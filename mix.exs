@@ -1,13 +1,13 @@
 defmodule CookieJar.Mixfile do
   use Mix.Project
 
-  @version "1.0.6"
+  @version "1.1.0"
 
   def project do
     [
       app: :cookie_jar,
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.8",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
