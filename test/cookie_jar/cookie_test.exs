@@ -9,7 +9,7 @@ defmodule CookieTest do
              domain: "",
              path: "",
              secure: false,
-             include_subdomain: true
+             include_subdomain: false
            } = Cookie.parse("yummy_cookie=choco")
   end
 
@@ -43,7 +43,7 @@ defmodule CookieTest do
              )
   end
 
-  test "http cookie drop secure" do
+  test "http cookie attempt to be secure" do
     assert nil ==
              Cookie.parse(
                "yummy_cookie=choco; Secure",
