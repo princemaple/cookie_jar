@@ -33,10 +33,10 @@ alias CookieJar.HTTPoison, as: HTTPoison
 Alternatively, you can use a permenent cookie jar by starting one as part of your supervision tree:
 
 ```elixir
-  def start(_type, _args) do
-    children = [
-    {CookieJar.Server, name: MyApp.CookieJar},
-    ...
+def start(_type, _args) do
+  children = [
+  {CookieJar.Server, name: MyApp.CookieJar},
+  ...
 ```
 
 Then you can use `MyApp.CookieJar` as the application-wide jar.
