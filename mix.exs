@@ -24,7 +24,7 @@ defmodule CookieJar.Mixfile do
     [
       {:httpoison, "~> 0.11 or ~> 1.0", optional: true},
       {:httpotion, "~> 3.0", optional: true},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :docs}
     ]
   end
 

@@ -14,7 +14,7 @@ defmodule CookieJar do
       # or
       CookieJar.new
   """
-  @spec start_link(keyword) :: GenServer.onstart()
+  @spec start_link(keyword) :: GenServer.on_start()
   def start_link(opts \\ []), do: CookieJar.Server.start_link(opts)
 
   @doc """
