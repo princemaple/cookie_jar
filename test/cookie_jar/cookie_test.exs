@@ -118,14 +118,6 @@ defmodule CookieTest do
     refute Cookie.matched?(cookie, URI.parse("https://example.com/whatever"))
   end
 
-  test "mailformed date" do
-    assert nil ==
-             Cookie.parse(
-               "yummy_cookie=choco; Secure; Expires=Wed, 21 Oct 2015 07:28:00 XXX",
-               URI.parse("https://example.com/whatever")
-             )
-  end
-
   test "cross domain cookie" do
     assert nil ==
              Cookie.parse(
