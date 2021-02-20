@@ -62,13 +62,10 @@ defmodule CookieJar.Cookie do
         _ -> {uri.host || "", false, uri.path || "", uri.scheme == "https"}
       end
 
-    # we do not have concept of a session, so just do 1 hour 
-    exp = DateTime.utc_now() |> DateTime.add(3600) |> DateTime.to_unix()
-
     cookie =
       parse_segments(
         String.split(set_cookie, ~r";\s*"),
-        %__MODULE__{domain: host, include_subdomain: inc, path: path, expires: exp}
+        %__MODULE__{domain: host, include_subdomain: inc, path: path}
       )
 
     # security check
@@ -89,7 +86,7 @@ defmodule CookieJar.Cookie do
   def matched?(cookie, uri) do
     cond do
       cookie.secure && uri.scheme != "https" -> false
-      cookie.expires < DateTime.to_unix(DateTime.utc_now()) -> false
+      cookie.expires > 0 && cookie.expires < DateTime.to_unix(DateTime.utc_now()) -> false
       !domain_match(cookie, uri.host) -> false
       !path_match(cookie, uri.path) -> false
       true -> true
@@ -186,14 +183,6 @@ defmodule CookieJar.Cookie do
 
       _ ->
         nil
-    end
-  end
-
-  defp update_cookie(cookie, "expires", exp) do
-    case Timex.parse(exp, "{RFC1123}") do
-      {:ok, date} -> %{cookie | expires: DateTime.to_unix(date)}
-      # there is so many broken date string out there, so I have go let it go
-      _ -> cookie
     end
   end
 
