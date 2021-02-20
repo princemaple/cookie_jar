@@ -25,6 +25,12 @@ defmodule CookieJar.Cookie do
         }
 
   @doc """
+  simple constructor
+  """
+  @spec new(String.t(), String.t()) :: t()
+  def new(name, value), do: %__MODULE__{name: name, value: value}
+
+  @doc """
   Return true if cookie2 is superceding cookie1. Only compare domain, path and name. 
   """
   @spec equal?(t(), t()) :: boolean()
@@ -65,10 +71,14 @@ defmodule CookieJar.Cookie do
         %__MODULE__{domain: host, include_subdomain: inc, path: path, expires: exp}
       )
 
-    # drop secure from non secure cookie
-    case secure do
+    # security check
+    cond do
+      cookie == nil -> nil
+      # attempted to set secure cookie from http
+      cookie.secure && !secure -> nil
+      # attempted to set cross site cookie
+      cookie.domain != host -> nil
       true -> cookie
-      false -> %{cookie | secure: false}
     end
   end
 
@@ -124,33 +134,46 @@ defmodule CookieJar.Cookie do
     end
   end
 
+  defp parse_segments([], %__MODULE__{name: "", value: ""}), do: nil
   defp parse_segments([], cookie), do: cookie
+
+  # the first segment is name=value
+  defp parse_segments([head | tail], cookie = %__MODULE__{name: "", value: ""}) do
+    case String.split(head, "=", parts: 2) do
+      [name, value] ->
+        parse_segments(tail, %{cookie | name: name, value: value})
+
+      _ ->
+        nil
+    end
+  end
 
   defp parse_segments([head | tail], cookie) do
     case String.split(head, "=", parts: 2) do
       [name, value] ->
-        parse_segments(tail, update_cookie(cookie, name, value))
+        case update_cookie(cookie, String.downcase(name), value) do
+          nil -> nil
+          cookie -> parse_segments(tail, cookie)
+        end
 
       [name] ->
-        parse_segments(tail, update_cookie(cookie, name))
+        case update_cookie(cookie, String.downcase(name)) do
+          nil -> nil
+          cookie -> parse_segments(tail, cookie)
+        end
     end
   end
 
-  # the first segment is name=value
-  defp update_cookie(cookie = %__MODULE__{name: "", value: ""}, name, value) do
-    %{cookie | name: name, value: value}
-  end
-
-  defp update_cookie(cookie, "Path", path) do
+  defp update_cookie(cookie, "path", path) do
     # remive trailing /
     %{cookie | path: String.trim_trailing(path, "/")}
   end
 
-  defp update_cookie(cookie, "Domain", domain) do
+  defp update_cookie(cookie, "domain", domain) do
     %{cookie | domain: String.trim_leading(domain, "."), include_subdomain: true}
   end
 
-  defp update_cookie(cookie, "Max-Age", age) do
+  defp update_cookie(cookie, "max-age", age) do
     case Integer.parse(age) do
       {seconds, ""} ->
         %{
@@ -162,21 +185,22 @@ defmodule CookieJar.Cookie do
         }
 
       _ ->
-        cookie
+        nil
     end
   end
 
-  defp update_cookie(cookie, "Expires", exp) do
+  defp update_cookie(cookie, "expires", exp) do
     case Timex.parse(exp, "{RFC1123}") do
       {:ok, date} -> %{cookie | expires: DateTime.to_unix(date)}
       # ignore malformed date
-      _ -> cookie
+      _ -> nil
     end
   end
 
-  # fell off cases for unrecognized parameters
+  # fell off case for unrecognized parameters
   defp update_cookie(cookie, _, _), do: cookie
 
-  defp update_cookie(cookie, "Secure"), do: %{cookie | secure: true}
+  defp update_cookie(cookie, "secure"), do: %{cookie | secure: true}
+  # fell off case for unrecognized parameters
   defp update_cookie(cookie, _), do: cookie
 end
