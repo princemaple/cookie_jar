@@ -16,17 +16,17 @@ if Code.ensure_loaded?(HTTPotion) do
       [
         Code.eval_quoted(httpotion_spec(action), [], __ENV__),
         def unquote(action)(jar, url, options \\ []) do
-          headers = add_jar_cookies(jar, options[:headers])
+          headers = add_jar_cookies(jar, options[:headers], url)
           result = HTTPotion.unquote(action)(url, Keyword.put(options, :headers, headers))
-          update_jar_cookies(jar, result)
+          update_jar_cookies(jar, result, url)
         end
       ]
     end
 
-    defp add_jar_cookies(jar, nil), do: add_jar_cookies(jar, [])
+    defp add_jar_cookies(jar, nil, url), do: add_jar_cookies(jar, [], url)
 
-    defp add_jar_cookies(jar, headers) do
-      jar_cookies = CookieJar.label(jar)
+    defp add_jar_cookies(jar, headers, url) do
+      jar_cookies = CookieJar.label(jar, url)
 
       headers
       |> Enum.into(%{})
@@ -36,24 +36,17 @@ if Code.ensure_loaded?(HTTPotion) do
       |> Enum.into([])
     end
 
-    defp update_jar_cookies(jar, %HTTPotion.Response{headers: headers} = response) do
-      do_update_jar_cookies(jar, headers)
+    defp update_jar_cookies(jar, %HTTPotion.Response{headers: headers} = response, url) do
+      do_update_jar_cookies(jar, headers, url)
       response
     end
 
-    defp update_jar_cookies(_jar, %HTTPotion.ErrorResponse{} = error), do: error
+    defp update_jar_cookies(_jar, %HTTPotion.ErrorResponse{} = error, _url), do: error
 
-    defp do_update_jar_cookies(jar, %HTTPotion.Headers{hdrs: headers}) do
+    defp do_update_jar_cookies(jar, %HTTPotion.Headers{hdrs: headers}, url) do
       response_cookies = Map.get(headers, "set-cookie", []) |> List.wrap()
 
-      cookies =
-        Enum.reduce(response_cookies, %{}, fn cookie, cookies ->
-          [key_value_string | _rest] = String.split(cookie, "; ")
-          [key, value] = String.split(key_value_string, "=", parts: 2)
-          Map.put(cookies, key, value)
-        end)
-
-      CookieJar.pour(jar, cookies)
+      CookieJar.pour(jar, response_cookies, url)
     end
   end
 end

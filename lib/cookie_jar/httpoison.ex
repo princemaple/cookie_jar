@@ -14,9 +14,9 @@ if Code.ensure_loaded?(HTTPoison) do
       [
         Code.eval_quoted(httpoison_spec(action, false), [], __ENV__),
         def unquote(action)(jar, url, headers \\ [], options \\ []) do
-          headers = add_jar_cookies(jar, headers)
+          headers = add_jar_cookies(jar, headers, url)
           result = HTTPoison.unquote(action)(url, headers, options)
-          update_jar_cookies(jar, result)
+          update_jar_cookies(jar, result, url)
         end
       ]
     end
@@ -25,15 +25,15 @@ if Code.ensure_loaded?(HTTPoison) do
       [
         Code.eval_quoted(httpoison_spec(action, true), [], __ENV__),
         def unquote(action)(jar, url, body, headers \\ [], options \\ []) do
-          headers = add_jar_cookies(jar, headers)
+          headers = add_jar_cookies(jar, headers, url)
           result = HTTPoison.unquote(action)(url, body, headers, options)
-          update_jar_cookies(jar, result)
+          update_jar_cookies(jar, result, url)
         end
       ]
     end
 
-    defp add_jar_cookies(jar, headers) do
-      jar_cookies = CookieJar.label(jar)
+    defp add_jar_cookies(jar, headers, url) do
+      jar_cookies = CookieJar.label(jar, url)
 
       headers
       |> Enum.into(%{})
@@ -43,33 +43,28 @@ if Code.ensure_loaded?(HTTPoison) do
       |> Enum.into([])
     end
 
-    defp update_jar_cookies(_jar, {:error, %HTTPoison.Error{} = error}), do: {:error, error}
+    defp update_jar_cookies(_jar, {:error, %HTTPoison.Error{} = error}, _url), do: {:error, error}
 
-    defp update_jar_cookies(jar, %HTTPoison.Response{headers: headers} = response) do
-      do_update_jar_cookies(jar, headers)
+    defp update_jar_cookies(jar, %HTTPoison.Response{headers: headers} = response, url) do
+      do_update_jar_cookies(jar, headers, url)
       response
     end
 
-    defp update_jar_cookies(jar, {:ok, %HTTPoison.Response{headers: headers} = response}) do
-      do_update_jar_cookies(jar, headers)
+    defp update_jar_cookies(jar, {:ok, %HTTPoison.Response{headers: headers} = response}, url) do
+      do_update_jar_cookies(jar, headers, url)
       {:ok, response}
     end
 
-    defp do_update_jar_cookies(jar, headers) do
+    defp do_update_jar_cookies(jar, headers, url) do
       cookies =
-        Enum.reduce(headers, %{}, fn {key, value}, cookies ->
+        Enum.flat_map(headers, fn {key, value} ->
           case String.downcase(key) do
-            "set-cookie" ->
-              [key_value_string | _rest] = String.split(value, "; ")
-              [key, value] = String.split(key_value_string, "=", parts: 2)
-              Map.put(cookies, key, value)
-
-            _ ->
-              cookies
+            "set-cookie" -> [value]
+            _ -> []
           end
         end)
 
-      CookieJar.pour(jar, cookies)
+      CookieJar.pour(jar, cookies, url)
     end
   end
 end

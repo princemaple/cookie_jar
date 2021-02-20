@@ -44,14 +44,7 @@ defmodule CookieTest do
   end
 
   test "http cookie drop secure" do
-    assert %Cookie{
-             name: "yummy_cookie",
-             value: "choco",
-             domain: "example.com",
-             path: "",
-             secure: false,
-             include_subdomain: false
-           } =
+    assert nil ==
              Cookie.parse(
                "yummy_cookie=choco; Secure",
                URI.parse("http://example.com")
@@ -73,6 +66,18 @@ defmodule CookieTest do
     cookie =
       Cookie.parse(
         "yummy_cookie=choco; Secure; Domain=example.com; Path=/",
+        URI.parse("https://example.com/whatever")
+      )
+
+    assert Cookie.matched?(cookie, URI.parse("https://example.com/"))
+    assert Cookie.matched?(cookie, URI.parse("https://sub.example.com/"))
+    refute Cookie.matched?(cookie, URI.parse("https://sub.example2.com/"))
+  end
+
+  test "mixed case" do
+    cookie =
+      Cookie.parse(
+        "yummy_cookie=choco; secure; Domain=example.com; path=/",
         URI.parse("https://example.com/whatever")
       )
 
@@ -114,12 +119,18 @@ defmodule CookieTest do
   end
 
   test "mailformed date" do
-    cookie =
-      Cookie.parse(
-        "yummy_cookie=choco; Secure; Expires=Wed, 21 Oct 2015 07:28:00 XXX",
-        URI.parse("https://example.com/whatever")
-      )
+    assert nil ==
+             Cookie.parse(
+               "yummy_cookie=choco; Secure; Expires=Wed, 21 Oct 2015 07:28:00 XXX",
+               URI.parse("https://example.com/whatever")
+             )
+  end
 
-    assert Cookie.matched?(cookie, URI.parse("https://example.com/whatever"))
+  test "cross domain cookie" do
+    assert nil ==
+             Cookie.parse(
+               "yummy_cookie=choco; Secure; Domain=example2.com",
+               URI.parse("https://example.com/whatever")
+             )
   end
 end

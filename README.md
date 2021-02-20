@@ -30,6 +30,15 @@ alias CookieJar.HTTPoison, as: HTTPoison
 {:ok, jar} = CookieJar.new
 ```
 
+Alternatively, get a permenent cookie jar as part of your supervision tree:
+```
+  def start(_type, _args) do
+    children = [
+	  {CookieJar.Server, name: MyApp.CookieJar},
+	  ...
+```
+Then you can use `MyApp.CookieJar` as the application-wide permenent jar.
+
 3. Shove the jar into all http calls
 ```diff
 - HTTPoison.get("https://example.com/api/call")
