@@ -20,7 +20,7 @@ end
 
 ## Usage
 
-1. Add alias
+1. Add alias (optional)
 ```elixir
 alias CookieJar.HTTPoison, as: HTTPoison
 ```
@@ -30,14 +30,14 @@ alias CookieJar.HTTPoison, as: HTTPoison
 {:ok, jar} = CookieJar.new
 ```
 
-Alternatively, get a permenent cookie jar as part of your supervision tree:
-```
+Alternatively, you can use a permenent cookie jar by starting one as part of your supervision tree:
+```elixir
   def start(_type, _args) do
     children = [
 	  {CookieJar.Server, name: MyApp.CookieJar},
 	  ...
 ```
-Then you can use `MyApp.CookieJar` as the application-wide permenent jar.
+Then you can use `MyApp.CookieJar` as the application-wide jar.
 
 3. Shove the jar into all http calls
 ```diff
@@ -46,6 +46,14 @@ Then you can use `MyApp.CookieJar` as the application-wide permenent jar.
 ```
 
 4. Profit (cookies imprisoned)
+All cookies from "Set-Cookie:" response headers are now stored in the jar and will be automatically sent back through "Cookie:" request headers. CookieJar respect the following attributes in the cookies:
+
+* Domain: To limit abuses, CookieJar only allows `Domain` to be set to the current hostname of the request or it's immediate parent domain.
+* Path: A cookie can limit the sending back to part of the path tree in the request
+* Secure: A secure cookie can only be set by https responses and used by https requests
+* Max-Age: A cookie can specify it's max age
+
+All other attributes are silently ignored.
 
 **Take a look at [the docs](https://hexdocs.pm/cookie_jar)**
 - [How to directly use CookieJar](https://hexdocs.pm/cookie_jar/CookieJar.html#content)

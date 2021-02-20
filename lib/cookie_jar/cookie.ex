@@ -7,7 +7,7 @@ defmodule CookieJar.Cookie do
   """
 
   defstruct domain: "",
-            include_subdomain: true,
+            include_subdomain: false,
             path: "",
             secure: false,
             expires: 0,
@@ -44,28 +44,28 @@ defmodule CookieJar.Cookie do
   end
 
   @doc """
-  parse a cookie from the Set-Cookie: string without the "Set-Cookie: " part
+  parse a cookie from the Set-Cookie: value. return nil if no valid cookie found
   """
-  @spec parse(String.t()) :: t()
+  @spec parse(String.t()) :: nil | t()
   def parse(set_cookie), do: parse(set_cookie, nil)
 
   @doc """
-  parse a cookie from the Set-Cookie: string without the "Set-Cookie: " part,
+  parse a cookie from the Set-Cookie: value. return nil if no valid cookie found
   taking additional infomatio ffrom the requesting URI
   """
-  @spec parse(String.t(), nil | URI.t()) :: t()
+  @spec parse(String.t(), nil | URI.t()) :: nil | t()
   def parse(set_cookie, uri) do
-    # sesimble default
-    {host, inc, path, secure} =
+    # sensible default
+    {host, path, secure} =
       case uri do
-        nil -> {"", true, "", false}
-        _ -> {uri.host || "", false, uri.path || "", uri.scheme == "https"}
+        nil -> {"", "", false}
+        _ -> {uri.host || "", uri.path || "", uri.scheme == "https"}
       end
 
     cookie =
       parse_segments(
         String.split(set_cookie, ~r";\s*"),
-        %__MODULE__{domain: host, include_subdomain: inc, path: path}
+        %__MODULE__{domain: host, path: path}
       )
 
     # security check
@@ -148,16 +148,10 @@ defmodule CookieJar.Cookie do
   defp parse_segments([head | tail], cookie) do
     case String.split(head, "=", parts: 2) do
       [name, value] ->
-        case update_cookie(cookie, String.downcase(name), value) do
-          nil -> nil
-          cookie -> parse_segments(tail, cookie)
-        end
+        parse_segments(tail, update_cookie(cookie, String.downcase(name), value))
 
       [name] ->
-        case update_cookie(cookie, String.downcase(name)) do
-          nil -> nil
-          cookie -> parse_segments(tail, cookie)
-        end
+        parse_segments(tail, update_cookie(cookie, String.downcase(name)))
     end
   end
 
@@ -182,7 +176,7 @@ defmodule CookieJar.Cookie do
         }
 
       _ ->
-        nil
+        cookie
     end
   end
 
