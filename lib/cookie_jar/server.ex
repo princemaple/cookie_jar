@@ -107,7 +107,8 @@ defmodule CookieJar.Server do
 
   # return domain and all parent domains in a list, most specific in the end.
   # eg: www.example.com will be: ["com", "example.com", "www.example.com"]
-  def all_domains(%URI{host: host}), do: all_domains([], host)
+  defp all_domains(%URI{host: nil}), do: []
+  defp all_domains(%URI{host: host}), do: all_domains([], host)
 
   defp all_domains(list, host) do
     case String.split(host, ".", parts: 2) do
