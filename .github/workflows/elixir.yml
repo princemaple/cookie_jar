@@ -11,7 +11,7 @@ jobs:
         otp: [23.2, 22.3, 21.3]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup elixir
         uses: erlef/setup-elixir@v1
         with:
