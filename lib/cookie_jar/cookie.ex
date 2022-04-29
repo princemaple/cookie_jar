@@ -31,7 +31,7 @@ defmodule CookieJar.Cookie do
   def new(name, value), do: %__MODULE__{name: name, value: value}
 
   @doc """
-  Return true if cookie2 is superceding cookie1. Only compare domain, path and name. 
+  Return true if cookie2 is superseding cookie1. Only compare domain, path and name. 
   """
   @spec equal?(t(), t()) :: boolean()
   def equal?(cookie1, cookie2) do
