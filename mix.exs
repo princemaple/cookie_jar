@@ -22,7 +22,7 @@ defmodule CookieJar.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 2.0", optional: true},
+      {:httpoison, "~> 1.8 or ~> 2.0", optional: true},
       {:httpotion, "~> 3.0", optional: true},
       {:ex_doc, ">= 0.0.0", only: :docs}
     ]
