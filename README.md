@@ -5,6 +5,9 @@
 
 ![COOKIE JAR](https://cloud.githubusercontent.com/assets/1329716/22807691/5fe454d6-ef7c-11e6-8e0b-30aca685c83a.jpg)
 
+> First of all, I recommend `req` over other http clients. Secondly I think it'd quite easy to write hooks/plugins
+> in `req` to replicate what this repo does. Hence, I'm deprecating this little toy project.
+
 ## Installation
 
 The package can be installed
